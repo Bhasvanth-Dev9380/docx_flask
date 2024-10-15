@@ -1,7 +1,7 @@
 from flask import Flask, request, send_file
-import docx
 import os
 import json
+from docx import Document  # Ensure correct import from python-docx
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ def update_document():
     uploaded_file.save(document_path)
 
     # Open and modify the Word document using python-docx
-    doc = docx.Document(document_path)
+    doc = Document(document_path)
 
     entries = data.get('entries', [])
 
@@ -73,3 +73,4 @@ def update_document():
 
     # Send back the updated document
     return send_file(updated_path, as_attachment=True)
+
