@@ -1,9 +1,56 @@
-from flask import Flask, request, send_file
 import os
+import requests
+from io import BytesIO
+from flask import Flask, request, send_file
 import json
-from docx import Document  # Ensure correct import from python-docx
+from docx import Document
+from docx.shared import Inches
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 app = Flask(__name__)
+
+# Function to replace the logo and company name in the document
+def replace_logo_and_company_name(doc, logo_url, company_name):
+    # Download the logo image from the URL
+    response = requests.get(logo_url)
+    image_bytes = BytesIO(response.content)
+
+    # Access the header section of the document
+    for section in doc.sections:
+        header = section.header
+        for paragraph in header.paragraphs:
+            print(f"Paragraph before replacement: '{paragraph.text}'")  # Debugging: Print paragraph text
+
+            # If both placeholders are in the same paragraph, we split and process them
+            if "{logo}" in paragraph.text and "{Company}" in paragraph.text:
+                # Split the paragraph text by {logo} and {Company}
+                parts = paragraph.text.split("{logo}")
+                before_logo = parts[0]  # Text before {logo}
+                after_logo = parts[1].split("{Company}")  # Text after {logo} but before {Company}
+                after_company = after_logo[1] if len(after_logo) > 1 else ""
+
+                # Clear the paragraph and rebuild it
+                paragraph.clear()
+
+                # Add the text before logo
+                run = paragraph.add_run(before_logo)
+
+                # Insert the logo and ensure it doesn't cause layout issues
+                run = paragraph.add_run()
+                run.add_picture(image_bytes, width=Inches(0.35))
+
+                # Add text between logo and company name
+                paragraph.add_run(after_logo[0])
+
+                # Add the company name and any remaining text after company name
+                paragraph.add_run(company_name)
+                paragraph.add_run(after_company)
+
+                # Align paragraph to prevent any extra new lines or unwanted page breaks
+                paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+
+            print(f"Paragraph after replacement: '{paragraph.text}'")  # Debugging: Print paragraph after replacement
+
 
 # Endpoint to handle document updating
 @app.route('/update-document', methods=['POST'])
@@ -25,6 +72,14 @@ def update_document():
 
     # Open and modify the Word document using python-docx
     doc = Document(document_path)
+
+    # Extract company name and logo URL from JSON data
+    company_name = data.get('company_name', 'Default Company')
+    logo_url = data.get('logo_url', '')  # Assuming logo_url is a field in the incoming data
+
+    # Replace the placeholders for the logo and company name
+    if logo_url and company_name:
+        replace_logo_and_company_name(doc, logo_url, company_name)
 
     entries = data.get('entries', [])
 
@@ -75,5 +130,4 @@ def update_document():
     return send_file(updated_path, as_attachment=True)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
