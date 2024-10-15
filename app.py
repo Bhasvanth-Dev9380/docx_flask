@@ -35,7 +35,7 @@ def update_document():
             # Iterate over the rows and check for existing S.No
             for current_row_index in range(1, len(table.rows)):  # Skip header row
                 row = table.rows[current_row_index]
-                if row.cells[0].text.strip() == entry['s_no']:  # Check S.No match
+                if row.cells[0].text.strip() == entry['No.']:  # Check S.No match
                     found_row = True
                     break
 
