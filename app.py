@@ -32,15 +32,15 @@ def update_document():
     for table in doc.tables:
         for entry in entries:
             found_row = False
-            # Iterate over the rows and check for existing S.No
+            # Iterate over the rows and check for existing 'No.'
             for current_row_index in range(1, len(table.rows)):  # Skip header row
                 row = table.rows[current_row_index]
-                if row.cells[0].text.strip() == entry['No.']:  # Check S.No match
+                if row.cells[0].text.strip() == entry['No.']:  # Check 'No.' match
                     found_row = True
                     break
 
             if found_row:
-                # S.No already exists, skip to next entry
+                # 'No.' already exists, skip to next entry
                 continue
 
             # If no match found, find the first empty row or add a new one
@@ -56,16 +56,16 @@ def update_document():
                     row.cells[i].text = cell.text  # Copy structure from the last row
 
             # Update the row with data from the JSON
-            row.cells[0].text = entry['No.']  # S.No
-            row.cells[1].text = entry['drawing_number']  # Drawing Number
-            row.cells[2].text = entry['drawing_title']  # Drawing Title
-            row.cells[3].text = entry['revision_number']  # Revision Number
-            row.cells[4].text = entry['date_of_issue']  # Date of Issue
-            row.cells[5].text = entry['prepared_by']  # Prepared By
-            row.cells[6].text = entry['approved_by']  # Approved By
-            row.cells[7].text = entry['client_approval_status']  # Client Approval Status
-            row.cells[8].text = entry['file_location']  # File Location
-            row.cells[9].text = entry['remarks']  # Remarks
+            row.cells[0].text = entry['No.']  # No.
+            row.cells[1].text = entry['Drawing Number']  # Drawing Number
+            row.cells[2].text = entry['Drawing Title']  # Drawing Title
+            row.cells[3].text = entry['Revision Number']  # Revision Number
+            row.cells[4].text = entry['Date of Issue']  # Date of Issue
+            row.cells[5].text = entry['Prepared By']  # Prepared By
+            row.cells[6].text = entry['Approved By']  # Approved By
+            row.cells[7].text = entry['Client Approval Status']  # Client Approval Status
+            row.cells[8].text = entry['File Location/Reference']  # File Location/Reference
+            row.cells[9].text = entry['Remarks']  # Remarks
 
     # Save the updated document
     updated_path = os.path.join('uploads', 'updated_' + uploaded_file.filename)
