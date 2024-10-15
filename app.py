@@ -16,12 +16,12 @@ def update_document():
     json_data = request.form['json']
     data = json.loads(json_data)  # Parse the JSON string
 
-    # Get the uploaded document
-    uploaded_file = request.files['document']
-    document_path = os.path.join('uploads', uploaded_file.filename)
+    # Load the template document from the server (instead of getting it from the client)
+    document_path = os.path.join('uploads', 'template.docx')  # Replace with your template's path
 
-    # Save the uploaded file locally
-    uploaded_file.save(document_path)
+    # Ensure that the template exists
+    if not os.path.exists(document_path):
+        return "Template not found", 404
 
     # Open and modify the Word document using python-docx
     doc = Document(document_path)
@@ -68,9 +68,12 @@ def update_document():
             row.cells[9].text = entry['remarks']  # Remarks
 
     # Save the updated document
-    updated_path = os.path.join('uploads', 'updated_' + uploaded_file.filename)
+    updated_path = os.path.join('uploads', 'updated_template.docx')
     doc.save(updated_path)
 
     # Send back the updated document
     return send_file(updated_path, as_attachment=True)
 
+
+if __name__ == '__main__':
+    app.run(debug=True)
