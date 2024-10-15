@@ -56,7 +56,7 @@ def update_document():
                     row.cells[i].text = cell.text  # Copy structure from the last row
 
             # Update the row with data from the JSON
-            row.cells[0].text = entry['s_no']  # S.No
+            row.cells[0].text = entry['No.']  # S.No
             row.cells[1].text = entry['drawing_number']  # Drawing Number
             row.cells[2].text = entry['drawing_title']  # Drawing Title
             row.cells[3].text = entry['revision_number']  # Revision Number
